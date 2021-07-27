@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import {Provider} from 'react-redux';
-import {Form} from './Form';
+import Form from './Form';
 import {store} from './state';
 
 function App() {

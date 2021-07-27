@@ -1,10 +1,14 @@
-import React, {useState, useEffect, ChangeEvent, FormEventHandler, FormEvent} from 'react';
-import {getSpecialties, Specialty, submitForm} from './data';
+import React, {useState, useEffect, FormEventHandler, FormEvent} from 'react';
+import {getSpecialties, Specialty, FormData} from './data';
 import { connect } from 'react-redux';
-import { store } from './state';
 
-export function Form() {
-    let [formData, setFormData] = useState(store.getState());
+interface FormProps {
+    data: FormData,
+    submitForm: (payload: FormData) => void
+}
+
+function Form(props: FormProps) {
+    let [formData, setFormData] = useState<FormData>(props.data);
     let [specialties, setSpecialties] = useState<Specialty[]>([]);
 
     useEffect(() => {
@@ -20,9 +24,8 @@ export function Form() {
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        store.dispatch({ type: 'SUBMIT_FORM', payload: formData });
-        console.log('New state: ', store.getState());
-        submitForm(formData).then(() => alert('Form submitted'));
+        props.submitForm(formData);
+        //submitForm(formData).then(() => alert('Form submitted'));
     };
 
     return (
@@ -71,3 +74,10 @@ export function Form() {
         </form>
     );
 }
+
+
+export default connect(
+    (state: FormData) => ({data: state}),
+    (dispatch => ({submitForm: (formData: FormData) => dispatch({type: 'SUBMIT_FORM', payload: formData})}) )
+)(Form);
+
