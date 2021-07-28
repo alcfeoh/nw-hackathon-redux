@@ -1,14 +1,16 @@
 import React, {useState, useEffect, FormEventHandler, FormEvent} from 'react';
-import {getSpecialties, Specialty, FormData} from './data';
-import { connect } from 'react-redux';
+import {getSpecialties, Specialty, FormData, submitForm} from './data';
+import {defaultState, updateFormData, useAppDispatch, useAppSelector} from './state';
 
 interface FormProps {
     data: FormData,
     submitForm: (payload: FormData) => void
 }
 
-function Form(props: FormProps) {
-    let [formData, setFormData] = useState<FormData>(props.data);
+export function Form() {
+    const state = useAppSelector(state => state.appointmentForm);
+    let [formData, setFormData] = useState(state);
+    const dispatch = useAppDispatch();
     let [specialties, setSpecialties] = useState<Specialty[]>([]);
 
     useEffect(() => {
@@ -24,7 +26,7 @@ function Form(props: FormProps) {
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        props.submitForm(formData);
+        dispatch(updateFormData(formData));
         //submitForm(formData).then(() => alert('Form submitted'));
     };
 
@@ -76,8 +78,5 @@ function Form(props: FormProps) {
 }
 
 
-export default connect(
-    (state: FormData) => ({data: state}),
-    (dispatch => ({submitForm: (formData: FormData) => dispatch({type: 'SUBMIT_FORM', payload: formData})}) )
-)(Form);
+
 
