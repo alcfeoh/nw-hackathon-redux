@@ -1,20 +1,13 @@
 import React, {useState, useEffect, FormEventHandler, FormEvent} from 'react';
-import {getSpecialties, Specialty, FormData, submitForm} from './data';
-import {defaultState, updateFormData, useAppDispatch, useAppSelector} from './state';
-
-interface FormProps {
-    data: FormData,
-    submitForm: (payload: FormData) => void
-}
+import {fetchSpecialties, updateFormData, useAppDispatch, useAppSelector} from './state';
 
 export function Form() {
     const state = useAppSelector(state => state.appointmentForm);
     let [formData, setFormData] = useState(state);
     const dispatch = useAppDispatch();
-    let [specialties, setSpecialties] = useState<Specialty[]>([]);
 
     useEffect(() => {
-        getSpecialties().then(data => setSpecialties(data));
+        dispatch(fetchSpecialties());
     }, []);
 
     const handleChange = (event: any) => {
@@ -42,21 +35,23 @@ export function Form() {
                 />
             </label>
             <br />
-            <label>
-                Specialty:
-                <select
-                    name="specialtyId"
-                    value={formData.specialtyId}
-                    onChange={handleChange}
-                >
-                    {specialties &&
-                    specialties.map(specialty => (
-                        <option key={specialty.id} value={specialty.id}>
-                            {specialty.text}
-                        </option>
-                    ))}
-                </select>
-            </label>
+            {state.loading ? <div>LOADING...</div> :
+                <label>
+                    Specialty:
+                    <select
+                        name="specialtyId"
+                        value={formData.specialtyId}
+                        onChange={handleChange}
+                    >
+                        {state.specialties &&
+                        state.specialties.map(specialty => (
+                            <option key={specialty.id} value={specialty.id}>
+                                {specialty.text}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+            }
             <br />
             {formData.specialtyId == 8 && (
                 <>
