@@ -1,16 +1,15 @@
 import React, {useState, useEffect, FormEventHandler, FormEvent} from 'react';
-import {getSpecialties, Specialty} from './data';
-import {updateFormData, useAppDispatch, useAppSelector} from './state';
+import {fetchSpecialties, updateFormData, useAppDispatch, useAppSelector} from './state';
 
 
 export function Form() {
     const state = useAppSelector(state => state.appointmentForm);
+    const specialties = useAppSelector(state => state.appointmentForm.specialties);
     let [formData, setFormData] = useState(state);
     const dispatch = useAppDispatch();
-    let [specialties, setSpecialties] = useState<Specialty[]>([]);
 
     useEffect(() => {
-        getSpecialties().then(data => setSpecialties(data));
+        dispatch(fetchSpecialties());
     }, []);
 
     const handleChange = (event: any) => {

@@ -7,6 +7,7 @@ export interface FormData {
     name: string;
     specialtyId: number;
     consentGiven: boolean;
+    specialties: Specialty[]  //   Array<Specialty>
 }
 
 export function getSpecialties(): Promise<Specialty[]> {

@@ -1,12 +1,18 @@
-import { FormData } from './data';
-import {createSlice, PayloadAction, configureStore} from '@reduxjs/toolkit';
+import {FormData, getSpecialties} from './data';
+import {createSlice, PayloadAction, configureStore, createAsyncThunk} from '@reduxjs/toolkit';
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
 
-export const defaultState = {
+export const defaultState: FormData = {
     name: '',
     specialtyId: 0,
-    consentGiven: false
+    consentGiven: false,
+    specialties: []
 };
+
+export const fetchSpecialties = createAsyncThunk(
+    'getSpecialties',
+    async () => getSpecialties()
+);
 
 export const appointmentFormSlice = createSlice({
     name: 'appointmentForm',
@@ -20,6 +26,11 @@ export const appointmentFormSlice = createSlice({
             state.specialtyId = action.payload.specialtyId || state.specialtyId;
             state.consentGiven = action.payload.consentGiven || state.consentGiven;
         }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(fetchSpecialties.fulfilled, (state, action) => {
+            state.specialties = action.payload;
+        })
     }
 });
 
@@ -34,6 +45,5 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch;
-
 export const useAppDispatch = () => useDispatch<AppDispatch>()
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
