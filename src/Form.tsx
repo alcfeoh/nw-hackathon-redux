@@ -1,11 +1,7 @@
 import React, {useState, useEffect, FormEventHandler, FormEvent} from 'react';
-import {getSpecialties, Specialty, FormData, submitForm} from './data';
-import {defaultState, updateFormData, useAppDispatch, useAppSelector} from './state';
+import {getSpecialties, Specialty} from './data';
+import {updateFormData, useAppDispatch, useAppSelector} from './state';
 
-interface FormProps {
-    data: FormData,
-    submitForm: (payload: FormData) => void
-}
 
 export function Form() {
     const state = useAppSelector(state => state.appointmentForm);
