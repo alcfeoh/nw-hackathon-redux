@@ -1,16 +1,12 @@
-import React, {useState, useEffect, FormEventHandler, FormEvent} from 'react';
-import {fetchSpecialties, updateFormData, useAppDispatch, useAppSelector} from './state';
-
+import React, {useState, FormEventHandler, FormEvent} from 'react';
+import {updateFormData, useAppDispatch, useAppSelector, useGetSpecialtiesQuery} from './state';
+import {Specialty} from './data';
 
 export function Form() {
     const state = useAppSelector(state => state.appointmentForm);
-    const specialties = useAppSelector(state => state.appointmentForm.specialties);
+    const { data, isLoading } = useGetSpecialtiesQuery();
     let [formData, setFormData] = useState(state);
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        dispatch(fetchSpecialties());
-    }, []);
 
     const handleChange = (event: any) => {
         setFormData({
@@ -26,6 +22,10 @@ export function Form() {
     };
 
     return (
+        <>
+        {isLoading ?
+                <h1>Loading...</h1>
+                :
         <form onSubmit={handleSubmit}>
             <label>
                 Name:
@@ -44,8 +44,8 @@ export function Form() {
                     value={formData.specialtyId}
                     onChange={handleChange}
                 >
-                    {specialties &&
-                    specialties.map(specialty => (
+                    {data &&
+                    data.map( (specialty: Specialty) => (
                         <option key={specialty.id} value={specialty.id}>
                             {specialty.text}
                         </option>
@@ -69,6 +69,8 @@ export function Form() {
             )}
             <input type="submit" value="Submit" />
         </form>
+        }
+        </>
     );
 }
 

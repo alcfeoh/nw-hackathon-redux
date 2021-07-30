@@ -1,6 +1,7 @@
-import {FormData, getSpecialties} from './data';
-import {createSlice, PayloadAction, configureStore, createAsyncThunk} from '@reduxjs/toolkit';
+import {FormData, Specialty} from './data';
+import {createSlice, PayloadAction, configureStore} from '@reduxjs/toolkit';
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
+import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 
 export const defaultState: FormData = {
     name: '',
@@ -9,10 +10,17 @@ export const defaultState: FormData = {
     specialties: []
 };
 
-export const fetchSpecialties = createAsyncThunk(
-    'getSpecialties',
-    async () => getSpecialties()
-);
+export const specialtiesApi = createApi({
+    reducerPath: 'specialtiesApi',
+    baseQuery: fetchBaseQuery({ baseUrl: 'https://nw-test-api.herokuapp.com/' }),
+    endpoints: (builder) => ({
+        getSpecialties: builder.query<Specialty[], void>({
+            query: () => `specialties`,
+        }),
+    }),
+});
+
+export const { useGetSpecialtiesQuery } = specialtiesApi;
 
 export const appointmentFormSlice = createSlice({
     name: 'appointmentForm',
@@ -26,11 +34,6 @@ export const appointmentFormSlice = createSlice({
             state.specialtyId = action.payload.specialtyId || state.specialtyId;
             state.consentGiven = action.payload.consentGiven || state.consentGiven;
         }
-    },
-    extraReducers: (builder) => {
-        builder.addCase(fetchSpecialties.fulfilled, (state, action) => {
-            state.specialties = action.payload;
-        })
     }
 });
 
@@ -40,7 +43,9 @@ export default appointmentFormSlice.reducer;
 export const store = configureStore({
     reducer: {
         appointmentForm: appointmentFormSlice.reducer,
+        [specialtiesApi.reducerPath]: specialtiesApi.reducer
     },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(specialtiesApi.middleware)
 })
 
 export type RootState = ReturnType<typeof store.getState>
